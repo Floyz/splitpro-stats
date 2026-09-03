@@ -13,9 +13,12 @@ const app = new Hono();
 app.use('*', logger());
 
 app.onError((error, c) => {
-  console.error(error);
-  const status = 'ZodError' === error.name ? 400 : 500;
-  return c.json({ error: 'ZodError' === error.name ? 'invalid query' : 'internal error' }, status);
+  console.error(`${c.req.method} ${c.req.path} failed:`, error);
+  if ('ZodError' === error.name) {
+    return c.json({ error: 'invalid query' }, 400);
+  }
+  // Database errors are the usual suspect on a fresh deployment: surface the message.
+  return c.json({ error: `internal error (${error.message})` }, 500);
 });
 
 // API

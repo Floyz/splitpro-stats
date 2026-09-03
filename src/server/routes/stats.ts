@@ -19,7 +19,16 @@ import { MY_EXPENSES_CTE, filterParams, filtersSchema } from '../filters.js';
 
 export const statsApi = new Hono<AuthEnv>();
 
-statsApi.get('/health', (c) => c.json({ ok: true }));
+/** Unauthenticated liveness + database connectivity probe (no data exposed). */
+statsApi.get('/health', async (c) => {
+  try {
+    await query('SELECT 1');
+    return c.json({ ok: true, db: 'ok' });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    return c.json({ ok: false, db: `error: ${message}` }, 503);
+  }
+});
 
 statsApi.use('*', requireUser);
 

@@ -33,7 +33,15 @@ export const apiFetch = async <T>(path: string, params: Params = {}): Promise<T>
     throw new ApiError(401, 'unauthorized');
   }
   if (!response.ok) {
-    throw new ApiError(response.status, response.statusText);
+    // HTTP/2 carries no status text: build a useful message from the status and the JSON body.
+    const body = await response.text().catch(() => '');
+    let detail = body;
+    try {
+      detail = (JSON.parse(body) as { error?: string }).error ?? body;
+    } catch {
+      // not JSON
+    }
+    throw new ApiError(response.status, `HTTP ${response.status}${detail ? `: ${detail}` : ''}`);
   }
   return (await response.json()) as T;
 };

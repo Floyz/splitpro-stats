@@ -102,7 +102,10 @@ export const App = () => {
         <Filters me={me} currency={scope.currency} />
 
         {error ? (
-          <p className="text-negative text-sm">Could not load your profile: {error.message}</p>
+          <p className="text-negative text-sm">
+            Could not load your profile: {error.message}. Check the container logs (
+            <code>docker logs splitpro-stats</code>) and <code>/stats/api/health</code>.
+          </p>
         ) : null}
 
         <main className="flex flex-col gap-4">

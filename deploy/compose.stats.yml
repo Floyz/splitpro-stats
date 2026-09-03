@@ -1,0 +1,14 @@
+# Add-on service only: merge into an existing SplitPro compose project, e.g.
+#   docker compose -f compose.yml -f compose.stats.yml up -d
+services:
+  splitpro-stats:
+    image: ghcr.io/${GITHUB_OWNER}/splitpro-stats:latest
+    container_name: splitpro-stats
+    restart: always
+    environment:
+      - DATABASE_URL=postgresql://splitpro_stats:${STATS_DB_PASSWORD}@${POSTGRES_CONTAINER_NAME:-splitpro-db}:5432/${POSTGRES_DB}
+      - BASE_PATH=/stats
+      - PORT=3100
+    depends_on:
+      postgres:
+        condition: service_healthy

@@ -1,0 +1,117 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-positive: var(--positive);
+  --color-negative: var(--negative);
+  --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+/* App chrome: same tokens as SplitPro's globals.css so /stats feels native. */
+:root {
+  --background: hsl(0 0% 100%);
+  --foreground: hsl(224 71.4% 4.1%);
+  --card: hsl(0 0% 100%);
+  --muted: hsl(220 14.3% 95.9%);
+  --muted-foreground: hsl(220 8.9% 46.1%);
+  --border: hsl(220 13% 91%);
+  --positive: #006300;
+  --negative: #d03b3b;
+
+  /* Accent (same values as the SplitPro fork's custom-theme.css). */
+  --brand-cyan: oklch(60.9% 0.126 221.723);
+  --brand-emerald: oklch(59.6% 0.145 163.225);
+  --brand-violet: oklch(54.1% 0.281 293.009);
+  --brand-amber: oklch(66.6% 0.179 58.318);
+  --brand-rose: oklch(58.6% 0.253 17.585);
+  --primary: var(--brand-cyan);
+  --primary-foreground: white;
+
+  /* Data-viz tokens (light) - validated reference palette, see dataviz skill. */
+  --surface: #fcfcfb;
+  --viz-grid: #e1e0d9;
+  --viz-axis: #c3c2b7;
+  --viz-muted: #898781;
+  --viz-hover: rgba(11, 11, 11, 0.06);
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --series-3: #1baf7a;
+  --series-4: #eda100;
+  --series-5: #e87ba4;
+  --series-6: #008300;
+  --series-7: #4a3aa7;
+  --series-8: #e34948;
+  --series-other: #898781;
+}
+
+.dark {
+  --background: hsl(224 71.4% 4.1%);
+  --foreground: hsl(222 2% 83%);
+  --card: hsl(224 71.4% 4.1%);
+  --muted: hsl(215 27.9% 16.9%);
+  --muted-foreground: hsl(217.9 10.6% 64.9%);
+  --border: hsl(215 27.9% 16.9%);
+  --positive: #0ca30c;
+  --negative: #e66767;
+
+  --brand-cyan: oklch(71.5% 0.143 215.221);
+  --brand-emerald: oklch(69.6% 0.17 162.48);
+  --brand-violet: oklch(60.6% 0.25 292.717);
+  --brand-amber: oklch(76.9% 0.188 70.08);
+  --brand-rose: oklch(64.5% 0.246 16.439);
+  --primary-foreground: hsl(220.9 39.3% 11%);
+
+  /* Data-viz tokens (dark) - the dark column of the reference palette, not a flip. */
+  --surface: #1a1a19;
+  --viz-grid: #2c2c2a;
+  --viz-axis: #383835;
+  --viz-muted: #898781;
+  --viz-hover: rgba(255, 255, 255, 0.06);
+  --series-1: #3987e5;
+  --series-2: #d95926;
+  --series-3: #199e70;
+  --series-4: #c98500;
+  --series-5: #d55181;
+  --series-6: #008300;
+  --series-7: #9085e9;
+  --series-8: #e66767;
+}
+
+:root[data-accent='emerald'] {
+  --primary: var(--brand-emerald);
+}
+:root[data-accent='violet'] {
+  --primary: var(--brand-violet);
+}
+:root[data-accent='amber'] {
+  --primary: var(--brand-amber);
+}
+:root[data-accent='rose'] {
+  --primary: var(--brand-rose);
+}
+:root[data-accent='violet'].dark,
+:root[data-accent='rose'].dark {
+  --primary-foreground: white;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}

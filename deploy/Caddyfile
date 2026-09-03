@@ -1,0 +1,10 @@
+# Fallback when the SplitPro image is NOT the custom fork (no /stats rewrite):
+# put Caddy in front of both services and point the DSM reverse proxy at Caddy (:80 here).
+:80 {
+  handle /stats* {
+    reverse_proxy splitpro-stats:3100
+  }
+  handle {
+    reverse_proxy splitpro:3000
+  }
+}

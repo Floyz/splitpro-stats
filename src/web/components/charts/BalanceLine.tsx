@@ -20,10 +20,11 @@ export interface BalancePointMajor {
 interface Props {
   data: BalancePointMajor[];
   format: (value: number) => string;
+  name: string;
 }
 
 /** Single series over time vs a zero baseline: 2px line, 10% area wash, crosshair tooltip. */
-export const BalanceLine = ({ data, format }: Props) => (
+export const BalanceLine = ({ data, format, name }: Props) => (
   <ResponsiveContainer width="100%" height={300}>
     <AreaChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
       <CartesianGrid stroke={GRID_STROKE} vertical={false} />
@@ -50,7 +51,7 @@ export const BalanceLine = ({ data, format }: Props) => (
       <Area
         type="stepAfter"
         dataKey="balance"
-        name="Net balance"
+        name={name}
         stroke={SERIES[0]}
         strokeWidth={2}
         fill={SERIES[0]}

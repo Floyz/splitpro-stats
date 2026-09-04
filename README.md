@@ -9,6 +9,13 @@ Graphes : dépenses par mois (votre part / ce que vous avez payé), par catégor
 graphe a une vue tableau, des infobulles, un mode sombre dédié et suit le thème / la couleur
 d'accent choisis dans SplitPro (même origine, donc même `localStorage`).
 
+## Langues
+
+Anglais et français. La langue est choisie automatiquement : paramètre `?lang=fr` ou `?lang=en`
+dans l'URL, sinon la langue préférée de l'utilisateur dans SplitPro, sinon celle du navigateur.
+Les libellés vivent dans `src/web/i18n.ts` (un dictionnaire par langue, clés identiques, test
+`tests/i18n.test.ts`) et les catégories dans `src/shared/categories.ts`.
+
 ## Fonctionnement
 
 - **Serveur** : Hono (Node 22), `pg` en SQL brut, rôle Postgres `splitpro_stats` en lecture seule.

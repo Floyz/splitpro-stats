@@ -31,10 +31,12 @@ export interface MonthlyPoint {
 interface Props {
   data: MonthlyPoint[];
   format: (value: number) => string;
+  shareName: string;
+  paidName: string;
 }
 
 /** Two series (your share / you paid): grouped columns, legend + tooltip, single axis. */
-export const MonthlyColumns = ({ data, format }: Props) => (
+export const MonthlyColumns = ({ data, format, shareName, paidName }: Props) => (
   <ResponsiveContainer width="100%" height={300}>
     <BarChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barGap={2}>
       <CartesianGrid stroke={GRID_STROKE} vertical={false} />
@@ -60,14 +62,14 @@ export const MonthlyColumns = ({ data, format }: Props) => (
       <Legend formatter={legendFormatter} iconType="rect" iconSize={10} />
       <Bar
         dataKey="share"
-        name="Your share"
+        name={shareName}
         fill={SERIES[0]}
         maxBarSize={BAR_MAX}
         radius={COLUMN_RADIUS}
       />
       <Bar
         dataKey="paid"
-        name="You paid"
+        name={paidName}
         fill={SERIES[1]}
         maxBarSize={BAR_MAX}
         radius={COLUMN_RADIUS}

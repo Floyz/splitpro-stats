@@ -44,11 +44,12 @@ export const resolveCategory = (value: string | null | undefined): ResolvedCateg
   return section ? { section, item: value } : { section: 'general', item: 'other' };
 };
 
-// English labels, copied from SplitPro `public/locales/en/categories.json`.
-export const CATEGORY_LABELS: Record<
-  CategorySection,
-  { name: string; items: Record<string, string> }
-> = {
+export type CategoryLocale = 'en' | 'fr';
+
+type CategoryLabels = Record<CategorySection, { name: string; items: Record<string, string> }>;
+
+// Labels copied from SplitPro `public/locales/{en,fr}/categories.json`.
+const EN_LABELS: CategoryLabels = {
   entertainment: {
     name: 'Entertainment',
     items: {
@@ -126,9 +127,97 @@ export const CATEGORY_LABELS: Record<
   },
 };
 
-export const categoryLabel = (value: string | null | undefined): string => {
-  const { section, item } = resolveCategory(value);
-  return CATEGORY_LABELS[section].items[item] ?? CATEGORY_LABELS[section].name;
+const FR_LABELS: CategoryLabels = {
+  entertainment: {
+    name: 'Divertissements',
+    items: {
+      games: 'Jeux',
+      movies: 'Films',
+      music: 'Musique',
+      other: 'Divertissements',
+      sports: 'Sports',
+    },
+  },
+  food: {
+    name: 'Nourriture & boissons',
+    items: {
+      diningOut: 'Restaurant',
+      groceries: 'Courses',
+      liquor: 'Alcools',
+      other: 'Nourriture & boissons',
+    },
+  },
+  general: { name: 'Général', items: { general: 'Général', other: 'Général' } },
+  home: {
+    name: 'Habitat',
+    items: {
+      electronics: 'Appareils électroniques',
+      furniture: 'Meubles',
+      maintenance: 'Entretien courant',
+      mortgage: 'Prêt',
+      other: 'Habitat',
+      pets: 'Animaux',
+      rent: 'Loyer',
+      services: 'Réparations',
+      supplies: 'Fournitures',
+    },
+  },
+  life: {
+    name: 'Vie courante',
+    items: {
+      childcare: "Garde d'enfants",
+      clothing: 'Habits',
+      education: 'Formations',
+      gifts: 'Cadeaux',
+      insurance: 'Assurance',
+      medical: 'Médical',
+      other: 'Vie courante',
+      taxes: 'Impôts et taxes',
+    },
+  },
+  travel: {
+    name: 'Déplacements',
+    items: {
+      bicycle: 'Vélo',
+      bus: 'Bus & car',
+      car: 'Voiture',
+      fuel: 'Essence',
+      hotel: 'Hôtel',
+      other: 'Déplacements',
+      parking: 'Parking',
+      plane: 'Avion',
+      taxi: 'Taxi',
+      train: 'Train',
+    },
+  },
+  utilities: {
+    name: 'Frais courants',
+    items: {
+      cleaning: 'Ménage',
+      electricity: 'Électricité',
+      gas: 'Gaz',
+      internet: 'Internet',
+      other: 'Autres frais',
+      phone: 'Téléphonie',
+      trash: 'Déchets',
+      water: 'Eau',
+    },
+  },
 };
 
-export const sectionLabel = (section: CategorySection): string => CATEGORY_LABELS[section].name;
+export const CATEGORY_LABELS: Record<CategoryLocale, CategoryLabels> = {
+  en: EN_LABELS,
+  fr: FR_LABELS,
+};
+
+export const categoryLabel = (
+  value: string | null | undefined,
+  locale: CategoryLocale = 'en',
+): string => {
+  const { section, item } = resolveCategory(value);
+  const labels = CATEGORY_LABELS[locale][section];
+  return labels.items[item] ?? labels.name;
+};
+
+export const sectionLabel = (section: CategorySection, locale: CategoryLocale = 'en'): string =>
+  CATEGORY_LABELS[locale][section].name;

@@ -1,5 +1,7 @@
 import { type ReactNode, useState } from 'react';
 
+import { useT } from '../i18n';
+
 export interface TableColumn<Row> {
   key: string;
   header: string;
@@ -25,6 +27,7 @@ export const ChartCard = <Row,>({
   children,
   table,
 }: ChartCardProps<Row>) => {
+  const t = useT();
   const [view, setView] = useState<'chart' | 'table'>('chart');
 
   return (
@@ -42,12 +45,12 @@ export const ChartCard = <Row,>({
                 type="button"
                 onClick={() => setView(v)}
                 className={[
-                  'px-2 py-1 capitalize',
+                  'px-2 py-1',
                   view === v ? 'bg-muted font-medium' : 'text-muted-foreground',
                 ].join(' ')}
                 aria-pressed={view === v}
               >
-                {v}
+                {t('chart' === v ? 'chart.view_chart' : 'chart.view_table')}
               </button>
             ))}
           </div>
@@ -57,9 +60,7 @@ export const ChartCard = <Row,>({
       {/* Refetch keeps the frame: previous render at reduced opacity, no skeleton flash. */}
       <div className={['transition-opacity', loading ? 'opacity-50' : ''].join(' ')}>
         {empty && !loading ? (
-          <p className="text-muted-foreground py-10 text-center text-sm">
-            No data for this selection.
-          </p>
+          <p className="text-muted-foreground py-10 text-center text-sm">{t('chart.no_data')}</p>
         ) : 'table' === view && table ? (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">

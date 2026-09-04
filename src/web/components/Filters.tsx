@@ -1,6 +1,7 @@
 import type { MeResponse } from '@shared/api-types';
 
-import { PRESET_LABELS, type Preset, useFilters } from '../lib/filters';
+import { useT } from '../i18n';
+import { PRESET_KEYS, type Preset, useFilters } from '../lib/filters';
 
 interface Props {
   me: MeResponse | undefined;
@@ -14,6 +15,7 @@ const selectClass =
 
 /** One row above everything it scopes: date range first, then dimension filters, then currency. */
 export const Filters = ({ me, currency }: Props) => {
+  const t = useT();
   const { filters, update } = useFilters();
 
   return (
@@ -21,12 +23,12 @@ export const Filters = ({ me, currency }: Props) => {
       <select
         className={selectClass}
         value={filters.preset}
-        aria-label="Date range"
+        aria-label={t('filters.range')}
         onChange={(e) => update({ range: e.target.value })}
       >
         {PRESETS.map((p) => (
           <option key={p} value={p}>
-            {PRESET_LABELS[p]}
+            {t(PRESET_KEYS[p])}
           </option>
         ))}
       </select>
@@ -36,15 +38,15 @@ export const Filters = ({ me, currency }: Props) => {
           <input
             type="date"
             className={selectClass}
-            aria-label="From"
+            aria-label={t('filters.from')}
             value={filters.from ?? ''}
             onChange={(e) => update({ from: e.target.value })}
           />
-          <span className="text-muted-foreground text-sm">to</span>
+          <span className="text-muted-foreground text-sm">{t('filters.to_word')}</span>
           <input
             type="date"
             className={selectClass}
-            aria-label="To (exclusive)"
+            aria-label={t('filters.to')}
             value={filters.to ?? ''}
             onChange={(e) => update({ to: e.target.value })}
           />
@@ -54,14 +56,14 @@ export const Filters = ({ me, currency }: Props) => {
       <select
         className={selectClass}
         value={filters.groupId ?? ''}
-        aria-label="Group"
+        aria-label={t('filters.group')}
         onChange={(e) => update({ groupId: e.target.value })}
       >
-        <option value="">All groups & friends</option>
+        <option value="">{t('filters.all_groups')}</option>
         {me?.groups.map((g) => (
           <option key={g.id} value={g.id}>
             {g.name}
-            {g.archived ? ' (archived)' : ''}
+            {g.archived ? ` ${t('filters.archived')}` : ''}
           </option>
         ))}
       </select>
@@ -70,7 +72,7 @@ export const Filters = ({ me, currency }: Props) => {
         <div
           className="ml-auto flex rounded-md border text-sm"
           role="tablist"
-          aria-label="Currency"
+          aria-label={t('filters.currency')}
         >
           {me.currencies.map((code) => (
             <button

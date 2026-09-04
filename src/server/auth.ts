@@ -9,6 +9,7 @@ export interface SessionUser {
   name: string | null;
   email: string | null;
   currency: string;
+  preferredLanguage: string;
 }
 
 export type AuthEnv = { Variables: { user: SessionUser } };
@@ -25,7 +26,7 @@ export const requireUser = createMiddleware<AuthEnv>(async (c, next) => {
   }
 
   const { rows } = await query<SessionUser>(
-    `SELECT u.id, u.name, u.email, u.currency
+    `SELECT u.id, u.name, u.email, u.currency, u."preferredLanguage"
      FROM "Session" s
      JOIN "User" u ON u.id = s."userId"
      WHERE s."sessionToken" = $1 AND s.expires > now()`,

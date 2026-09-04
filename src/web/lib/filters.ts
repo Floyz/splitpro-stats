@@ -1,6 +1,8 @@
 import { useCallback, useMemo } from 'react';
 import { useSearchParams } from 'react-router';
 
+import type { TranslationKey } from '../i18n';
+
 export type Preset = 'year' | '12m' | '30d' | 'all' | 'custom';
 
 export interface Filters {
@@ -36,12 +38,12 @@ export const presetRange = (preset: Preset, now = new Date()): { from?: string; 
   }
 };
 
-export const PRESET_LABELS: Record<Preset, string> = {
-  year: 'This year',
-  '12m': 'Last 12 months',
-  '30d': 'Last 30 days',
-  all: 'All time',
-  custom: 'Custom range',
+export const PRESET_KEYS: Record<Preset, TranslationKey> = {
+  year: 'preset.year',
+  '12m': 'preset.12m',
+  '30d': 'preset.30d',
+  all: 'preset.all',
+  custom: 'preset.custom',
 };
 
 /** Filters live in the URL so `/stats?groupId=3` deep links from SplitPro work. */

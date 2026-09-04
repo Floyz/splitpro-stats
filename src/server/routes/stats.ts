@@ -154,7 +154,7 @@ statsApi.get('/spend/by-group', async (c) => {
   const f = parseFilters(c);
   const { rows } = await query(
     `WITH ${MY_EXPENSES_CTE}
-     SELECT g.id AS group_id, COALESCE(g.name, 'Friends') AS group_name, m.currency,
+     SELECT g.id AS group_id, g.name AS group_name, m.currency,
             SUM(m.my_share) AS share, COUNT(*) AS count
      FROM my_exp m LEFT JOIN "Group" g ON g.id = m."groupId"
      GROUP BY 1, 2, 3 ORDER BY 4 DESC`,
@@ -176,7 +176,7 @@ statsApi.get('/spend/by-group-month', async (c) => {
   const { rows } = await query(
     `WITH ${MY_EXPENSES_CTE}
      SELECT to_char(date_trunc('month', m."expenseDate"), 'YYYY-MM') AS month,
-            g.id AS group_id, COALESCE(g.name, 'Friends') AS group_name, m.currency,
+            g.id AS group_id, g.name AS group_name, m.currency,
             SUM(m.my_share) AS share
      FROM my_exp m LEFT JOIN "Group" g ON g.id = m."groupId"
      GROUP BY 1, 2, 3, 4 ORDER BY 1`,

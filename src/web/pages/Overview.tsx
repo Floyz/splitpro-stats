@@ -7,9 +7,11 @@ import { useApi } from '../api';
 import { ChartCard } from '../components/ChartCard';
 import { StatTile } from '../components/StatTile';
 import { MonthlyColumns } from '../components/charts/MonthlyColumns';
+import { useT } from '../i18n';
 import { integer, major, money, moneyCompact, moneyMajor, monthLabel } from '../lib/format';
 
 export const OverviewPage = () => {
+  const t = useT();
   const { params, currency } = useScope();
   const summary = useApi<SummaryRow[]>('/summary', params);
   const months = useApi<MonthRow[]>('/spend/by-month', params);
@@ -34,45 +36,53 @@ export const OverviewPage = () => {
     <>
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         <StatTile
-          label="Your share"
+          label={t('common.your_share')}
           value={row ? moneyCompact(row.share, currency) : '–'}
-          hint={row ? `${integer(row.count)} expenses` : undefined}
+          hint={row ? t('overview.expenses_count', { count: integer(row.count) }) : undefined}
         />
         <StatTile
-          label="You paid"
+          label={t('common.you_paid')}
           value={row ? moneyCompact(row.paid, currency) : '–'}
-          hint="Amounts you fronted"
+          hint={t('overview.you_paid_hint')}
         />
         <StatTile
-          label="Average per month"
+          label={t('overview.avg_month')}
           value={row && monthCount ? moneyCompact(avg, currency) : '–'}
-          hint={row?.firstMonth ? `since ${monthLabel(row.firstMonth)}` : undefined}
+          hint={
+            row?.firstMonth ? t('overview.since', { month: monthLabel(row.firstMonth) }) : undefined
+          }
         />
         <StatTile
-          label="Net balance"
+          label={t('common.net_balance')}
           value={row ? money(row.balance, currency) : '–'}
-          hint={balance > 0n ? 'Others owe you' : balance < 0n ? 'You owe others' : 'Settled up'}
+          hint={
+            balance > 0n
+              ? t('overview.owed_to_you')
+              : balance < 0n
+                ? t('overview.you_owe')
+                : t('overview.settled')
+          }
           tone={balance > 0n ? 'positive' : balance < 0n ? 'negative' : 'default'}
         />
       </div>
 
       <ChartCard
-        title={`Monthly spending (${currency})`}
-        subtitle="Your share of each expense versus what you paid"
+        title={t('overview.monthly_title', { currency })}
+        subtitle={t('overview.monthly_subtitle')}
         loading={months.loading}
         empty={0 === points.length}
         table={{
           columns: [
-            { key: 'month', header: 'Month', render: (p) => monthLabel(p.month) },
+            { key: 'month', header: t('common.month'), render: (p) => monthLabel(p.month) },
             {
               key: 'share',
-              header: 'Your share',
+              header: t('common.your_share'),
               align: 'right',
               render: (p) => moneyMajor(p.share, currency),
             },
             {
               key: 'paid',
-              header: 'You paid',
+              header: t('common.you_paid'),
               align: 'right',
               render: (p) => moneyMajor(p.paid, currency),
             },
@@ -81,7 +91,12 @@ export const OverviewPage = () => {
           rowKey: (p) => p.month,
         }}
       >
-        <MonthlyColumns data={points} format={(v) => moneyMajor(v, currency)} />
+        <MonthlyColumns
+          data={points}
+          format={(v) => moneyMajor(v, currency)}
+          shareName={t('common.your_share')}
+          paidName={t('common.you_paid')}
+        />
       </ChartCard>
     </>
   );

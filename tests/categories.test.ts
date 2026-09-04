@@ -11,6 +11,8 @@ describe('categories', () => {
   it('treats a stored section name as "other" of that section', () => {
     expect(resolveCategory('food')).toEqual({ section: 'food', item: 'other' });
     expect(categoryLabel('food')).toBe('Food & Drinks');
+    expect(categoryLabel('food', 'fr')).toBe('Nourriture & boissons');
+    expect(categoryLabel('groceries', 'fr')).toBe('Courses');
   });
 
   it('falls back to general', () => {

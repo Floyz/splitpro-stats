@@ -28,10 +28,12 @@ interface Props {
   /** Series names in fixed order (the last one may be "Other"). */
   series: string[];
   format: (value: number) => string;
+  /** Label of the folded tail series (rendered in the neutral colour). */
+  otherLabel: string;
 }
 
 /** Part-to-whole over time: stacked columns, 2px surface gap between segments, fixed colour order. */
-export const StackedMonths = ({ data, series, format }: Props) => (
+export const StackedMonths = ({ data, series, format, otherLabel }: Props) => (
   <ResponsiveContainer width="100%" height={300}>
     <BarChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
       <CartesianGrid stroke={GRID_STROKE} vertical={false} />
@@ -60,7 +62,7 @@ export const StackedMonths = ({ data, series, format }: Props) => (
           key={name}
           dataKey={name}
           stackId="month"
-          fill={'Other' === name ? SERIES_OTHER : (SERIES[index] ?? SERIES_OTHER)}
+          fill={otherLabel === name ? SERIES_OTHER : (SERIES[index] ?? SERIES_OTHER)}
           stroke="var(--card)"
           strokeWidth={2}
           maxBarSize={BAR_MAX}

@@ -1,11 +1,13 @@
-import { createContext, useContext, useMemo } from 'react';
-import { NavLink, Navigate, Route, Routes } from 'react-router';
+import { createContext, useContext, useEffect, useMemo } from 'react';
+import { NavLink, Navigate, Route, Routes, useLocation } from 'react-router';
 
 import type { MeResponse } from '@shared/api-types';
 
 import { useApi } from './api';
 import { Filters } from './components/Filters';
+import { LocaleContext, type TranslationKey, intlLocale, resolveLocale, useT } from './i18n';
 import { type Filters as FilterValues, useFilters } from './lib/filters';
+import { setFormatLocale } from './lib/format';
 import { BalancePage } from './pages/Balance';
 import { CategoriesPage } from './pages/Categories';
 import { GroupsPage } from './pages/Groups';
@@ -30,13 +32,13 @@ export const useScope = (): Scope => {
   return scope;
 };
 
-const NAV = [
-  { to: '/', label: 'Overview', end: true },
-  { to: '/categories', label: 'Categories' },
-  { to: '/groups', label: 'Groups' },
-  { to: '/payers', label: 'Payers' },
-  { to: '/balance', label: 'Balance' },
-  { to: '/top', label: 'Top expenses' },
+const NAV: Array<{ to: string; key: TranslationKey; end?: boolean }> = [
+  { to: '/', key: 'nav.overview', end: true },
+  { to: '/categories', key: 'nav.categories' },
+  { to: '/groups', key: 'nav.groups' },
+  { to: '/payers', key: 'nav.payers' },
+  { to: '/balance', key: 'nav.balance' },
+  { to: '/top', key: 'nav.top' },
 ];
 
 const resolveCurrency = (me: MeResponse | undefined, filters: FilterValues): string => {
@@ -51,8 +53,8 @@ const resolveCurrency = (me: MeResponse | undefined, filters: FilterValues): str
     : (me.currencies[0] ?? me.user.currency);
 };
 
-export const App = () => {
-  const { data: me, error } = useApi<MeResponse>('/me');
+const Shell = ({ me, error }: { me: MeResponse | undefined; error: Error | null }) => {
+  const t = useT();
   const { filters } = useFilters();
 
   const scope = useMemo<Scope>(() => {
@@ -70,9 +72,9 @@ export const App = () => {
         <header className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <a href="/balances" className="text-muted-foreground hover:text-foreground text-sm">
-              ← SplitPro
+              {t('header.back')}
             </a>
-            <h1 className="text-xl font-semibold">Statistics</h1>
+            <h1 className="text-xl font-semibold">{t('header.title')}</h1>
           </div>
           {me ? (
             <span className="text-muted-foreground text-sm">{me.user.name ?? me.user.email}</span>
@@ -94,7 +96,7 @@ export const App = () => {
                 ].join(' ')
               }
             >
-              {item.label}
+              {t(item.key)}
             </NavLink>
           ))}
         </nav>
@@ -103,8 +105,7 @@ export const App = () => {
 
         {error ? (
           <p className="text-negative text-sm">
-            Could not load your profile: {error.message}. Check the container logs (
-            <code>docker logs splitpro-stats</code>) and <code>/stats/api/health</code>.
+            {t('error.profile')}: {error.message}. {t('error.hint')}
           </p>
         ) : null}
 
@@ -121,5 +122,28 @@ export const App = () => {
         </main>
       </div>
     </ScopeContext.Provider>
+  );
+};
+
+export const App = () => {
+  const { data: me, error } = useApi<MeResponse>('/me');
+  const { search } = useLocation();
+
+  // `?lang=` > SplitPro preference (once /me is loaded) > browser language.
+  const locale = useMemo(() => {
+    const resolved = resolveLocale(me?.user.preferredLanguage, search, navigator.language);
+    // Set synchronously so children formatting in this same render pass use the right locale.
+    setFormatLocale(intlLocale(resolved, navigator.language));
+    return resolved;
+  }, [me?.user.preferredLanguage, search]);
+
+  useEffect(() => {
+    document.documentElement.lang = locale;
+  }, [locale]);
+
+  return (
+    <LocaleContext.Provider value={locale}>
+      <Shell key={locale} me={me} error={error} />
+    </LocaleContext.Provider>
   );
 };

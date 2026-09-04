@@ -1,7 +1,13 @@
 import type { Minor } from './money.js';
 
 export interface MeResponse {
-  user: { id: number; name: string | null; email: string | null; currency: string };
+  user: {
+    id: number;
+    name: string | null;
+    email: string | null;
+    currency: string;
+    preferredLanguage: string;
+  };
   groups: Array<{ id: number; name: string; archived: boolean }>;
   currencies: string[];
 }
@@ -35,7 +41,7 @@ export interface CategoryRow {
 
 export interface GroupRow {
   groupId: number | null;
-  groupName: string;
+  groupName: string | null;
   currency: string;
   share: Minor;
   count: number;
@@ -44,7 +50,7 @@ export interface GroupRow {
 export interface GroupMonthRow {
   month: string;
   groupId: number | null;
-  groupName: string;
+  groupName: string | null;
   currency: string;
   share: Minor;
 }

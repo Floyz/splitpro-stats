@@ -7,9 +7,12 @@ import { useScope } from '../App';
 import { useApi } from '../api';
 import { ChartCard } from '../components/ChartCard';
 import { HBars } from '../components/charts/HBars';
+import { useLocale, useT } from '../i18n';
 import { integer, major, moneyMajor, percent } from '../lib/format';
 
 export const CategoriesPage = () => {
+  const t = useT();
+  const locale = useLocale();
   const { params, currency } = useScope();
   const categories = useApi<CategoryRow[]>('/spend/by-category', params);
 
@@ -27,41 +30,45 @@ export const CategoriesPage = () => {
       acc.set(section, { value: cur.value + major(r.share, currency), count: cur.count + r.count });
     });
     return [...acc.entries()]
-      .map(([section, v]) => ({ label: sectionLabel(section), value: v.value, count: v.count }))
+      .map(([section, v]) => ({
+        label: sectionLabel(section, locale),
+        value: v.value,
+        count: v.count,
+      }))
       .sort((a, b) => b.value - a.value);
-  }, [rows, currency]);
+  }, [rows, currency, locale]);
 
   const byItem = useMemo(
     () =>
       rows
         .map((r) => ({
-          label: categoryLabel(r.category),
+          label: categoryLabel(r.category, locale),
           value: major(r.share, currency),
           count: r.count,
         }))
         .sort((a, b) => b.value - a.value)
         .slice(0, 12),
-    [rows, currency],
+    [rows, currency, locale],
   );
 
   const format = (v: number) => moneyMajor(v, currency);
   const columns = [
-    { key: 'label', header: 'Category', render: (r: { label: string }) => r.label },
+    { key: 'label', header: t('categories.column'), render: (r: { label: string }) => r.label },
     {
       key: 'value',
-      header: 'Your share',
+      header: t('common.your_share'),
       align: 'right' as const,
       render: (r: { value: number }) => format(r.value),
     },
     {
       key: 'pct',
-      header: 'Share of total',
+      header: t('common.share_of_total'),
       align: 'right' as const,
       render: (r: { value: number }) => percent(r.value, total),
     },
     {
       key: 'count',
-      header: 'Expenses',
+      header: t('common.expenses'),
       align: 'right' as const,
       render: (r: { count: number }) => integer(r.count),
     },
@@ -70,22 +77,22 @@ export const CategoriesPage = () => {
   return (
     <>
       <ChartCard
-        title={`By category (${currency})`}
-        subtitle="Your share, grouped by category section"
+        title={t('categories.title', { currency })}
+        subtitle={t('categories.subtitle')}
         loading={categories.loading}
         empty={0 === bySection.length}
         table={{ columns, rows: bySection, rowKey: (r) => r.label }}
       >
-        <HBars data={bySection} name="Your share" format={format} />
+        <HBars data={bySection} name={t('common.your_share')} format={format} />
       </ChartCard>
       <ChartCard
-        title="Top sub-categories"
-        subtitle="Twelve largest, by your share"
+        title={t('categories.top_title')}
+        subtitle={t('categories.top_subtitle')}
         loading={categories.loading}
         empty={0 === byItem.length}
         table={{ columns, rows: byItem, rowKey: (r) => r.label }}
       >
-        <HBars data={byItem} name="Your share" format={format} />
+        <HBars data={byItem} name={t('common.your_share')} format={format} />
       </ChartCard>
     </>
   );

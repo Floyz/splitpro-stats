@@ -6,9 +6,11 @@ import { useScope } from '../App';
 import { useApi } from '../api';
 import { ChartCard } from '../components/ChartCard';
 import { BalanceLine } from '../components/charts/BalanceLine';
+import { useT } from '../i18n';
 import { dateLabel, major, moneyMajor } from '../lib/format';
 
 export const BalancePage = () => {
+  const t = useT();
   const { params, currency } = useScope();
   // Running balance needs the full history; the date range only windows the display.
   const history = useApi<BalancePoint[]>('/balance/history', { groupId: params.groupId, currency });
@@ -31,23 +33,22 @@ export const BalancePage = () => {
 
   const last = points.at(-1);
   const format = (v: number) => moneyMajor(v, currency);
+  const subtitle = last
+    ? `${t('balance.subtitle')}. ${t('balance.latest', { value: format(last.balance) })}`
+    : t('balance.subtitle');
 
   return (
     <ChartCard
-      title={`Net balance over time (${currency})`}
-      subtitle={
-        last
-          ? `Positive means others owe you. Latest: ${format(last.balance)}`
-          : 'Positive means others owe you'
-      }
+      title={t('balance.title', { currency })}
+      subtitle={subtitle}
       loading={history.loading}
       empty={0 === points.length}
       table={{
         columns: [
-          { key: 'day', header: 'Date', render: (p) => dateLabel(p.day) },
+          { key: 'day', header: t('common.date'), render: (p) => dateLabel(p.day) },
           {
             key: 'balance',
-            header: 'Net balance',
+            header: t('common.net_balance'),
             align: 'right',
             render: (p) => format(p.balance),
           },
@@ -56,7 +57,7 @@ export const BalancePage = () => {
         rowKey: (p) => p.day,
       }}
     >
-      <BalanceLine data={points} format={format} />
+      <BalanceLine data={points} format={format} name={t('common.net_balance')} />
     </ChartCard>
   );
 };

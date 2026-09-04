@@ -52,7 +52,7 @@ services.
 4. Ouvrir `https://<votre-domaine>/stats` (ou Compte → _Statistics_ dans SplitPro).
 
 L'image est publiée par `.github/workflows/publish.yml` sur `ghcr.io/<owner>/splitpro-stats`
-à chaque tag `v*`. Rendre le package public sur GitHub, ou faire `docker login ghcr.io` sur le NAS.
+à chaque push sur `main` (tag `latest`) et à chaque tag `v*` (tag de version). Rendre le package public sur GitHub, ou faire `docker login ghcr.io` sur le NAS.
 
 ## Développement
 

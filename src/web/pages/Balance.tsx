@@ -33,9 +33,14 @@ export const BalancePage = () => {
 
   const last = points.at(-1);
   const format = (v: number) => moneyMajor(v, currency);
-  const subtitle = last
-    ? `${t('balance.subtitle')}. ${t('balance.latest', { value: format(last.balance) })}`
-    : t('balance.subtitle');
+  const latest = last
+    ? last.balance > 0
+      ? t('balance.latest_positive', { value: format(last.balance) })
+      : last.balance < 0
+        ? t('balance.latest_negative', { value: format(last.balance) })
+        : t('balance.latest_zero')
+    : null;
+  const subtitle = latest ? `${latest}. ${t('balance.subtitle')}.` : t('balance.subtitle');
 
   return (
     <ChartCard
